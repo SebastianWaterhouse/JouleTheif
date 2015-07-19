@@ -3,7 +3,7 @@ import game, pygame, time, loader, sys, ui, random, maploader
 loader.assets.load_dir("assets_shared")
 
 username="User-"+str(random.randint(0,9))
-if "server" in sys.argv:
+if "server" in sys.argv or "saserver" in sys.argv:
 	print "Starting Server..."
 	server = game.Server(('', 1228))
 	time.sleep(0.1)
@@ -12,6 +12,8 @@ if "server" in sys.argv:
 	server.start_update_loop()
 	if len(sys.argv)>2:
 		username=sys.argv[2]
+if "saserver" in sys.argv:
+	while 1:pass
 time.sleep(0.1)
 pygame.init()
 
