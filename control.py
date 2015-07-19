@@ -1,13 +1,13 @@
 from __future__ import division
 import struct, model, loader, random, servercommands
 
-#                              usrID msgID ts left right jump suck gun blow MouseX MouseY UsrName ChatMsg
-controls_struct=struct.Struct("I     I     f  ?    ?     ?    ?    ?   ?    f      f      10s     50s")
+#                              usrID msgID ts left right jetpack jump suck gun blow MouseX MouseY UsrName ChatMsg
+controls_struct=struct.Struct("I     I     f  ?    ?     ?       ?    ?    ?   ?    f      f      10s     50s")
 
 class ControlsFrame(object):
 	def __init__(self, datagram):
 		self.uid, self.idx, self.departure_ts,\
-		self.left, self.right, self.jump, \
+		self.left, self.right, self.jetpack, self.jump, \
 		self.suck, self.gun, self.blow, self.mousex, self.mousey, self.usrname, self.chatmsg = controls_struct.unpack(datagram)
 
 		self.usrname, self.chatmsg = self.usrname.replace('\0',''), self.chatmsg.replace('\0','')
@@ -126,6 +126,16 @@ class ClientData(object):
 						self.player_entity.energy=0
 					if mouse_target.energy>mouse_target.energy_max:
 						self.player_entity.energy+=mouse_target.energy-mouse_target.energy_max
+
+		self.player_entity.jetpacking=False
+		if frame.jetpack:
+			rate = loader.assets("jetpack")["accel"]*dt
+			cost = rate*loader.assets("jetpack")["ratio"]
+			if self.player_entity.energy>=cost:
+				self.player_entity.jetpacking=True
+				self.player_entity.energy-=cost
+				self.player_entity.vel_y-=rate
+				
 
 	def process_chat_message(self, message):
 		cmd=message.split(" ")[0]

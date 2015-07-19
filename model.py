@@ -31,6 +31,7 @@ class Entity(object):
 		self.static=False
 
 		self.kill=False
+		self.missedframe=0
 
 		self._init()
 		
@@ -119,18 +120,19 @@ class Entity(object):
 			self._render()
 
 class JouledEntity(Entity):
-	je_struct=struct.Struct("I I I I I I ?")
+	je_struct=struct.Struct("I I I I I I ? ?")
 	def _init(self):
 		self.energy = self.energy_max = self.energy_regen = self.joulegun_target = self.hp = self.hp_max = 0
 		self.sucking = False
+		self.jetpacking = False
 		self.last_damage = ""
 
 	def pack_additional(self):
 		self.hp=max(0, self.hp)
-		return self.je_struct.pack(self.energy, self.energy_max, self.energy_regen, self.joulegun_target, self.hp, self.hp_max, self.sucking)
+		return self.je_struct.pack(self.energy, self.energy_max, self.energy_regen, self.joulegun_target, self.hp, self.hp_max, self.sucking, self.jetpacking)
 
 	def load_additional(self, dg):
-		self.energy, self.energy_max, self.energy_regen, self.joulegun_target, self.hp, self.hp_max, self.sucking = self.je_struct.unpack(dg)
+		self.energy, self.energy_max, self.energy_regen, self.joulegun_target, self.hp, self.hp_max, self.sucking, self.jetpacking = self.je_struct.unpack(dg)
 
 	def _update(self, dt):
 		self.vel_y+=52*dt
@@ -144,6 +146,8 @@ class JouledEntity(Entity):
 		if self.hp<=0:
 			self.kill=True
 
+
+
 	def round_energy(self):
 		if self.energy>self.energy_max:
 			self.energy=self.energy_max
@@ -155,6 +159,9 @@ class JouledEntity(Entity):
 		if self.hp_max != 0:
 			pygame.draw.rect(self.game.graphics, (100,0,0), pygame.Rect(self.x, self.y-8, (self.width/self.hp_max)*self.hp, 8))
 			self.game.graphics.blit(pygame.font.SysFont('',12).render(str(int(self.hp))+'/'+str(self.hp_max), True, (255,255,0)), (self.x, self.y-8))
+
+		if self.jetpacking:
+			self.game.particle_manager.make_jet_trail(1, self.rect.centerx, self.rect.bottom-self.height/4)
 
 		if self.joulegun_target:
 			pygame.draw.line(self.game.graphics, (255,0,0) if self.sucking else (0,255,0), self.rect.topleft, self.game.entities[self.joulegun_target].rect.topleft, 3)

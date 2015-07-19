@@ -22,7 +22,7 @@ loader.assets.load_dir("assets_client")
 if len(sys.argv)>1 and "server" not in sys.argv:
 	username=sys.argv[1]
 print "Connecting Client..."
-client = game.Client(('a.zapflame.com', 1228), username, screen)
+client = game.Client(('localhost', 1228), username, screen)
 maploader.load_map_fn('maps/test3.tmx', client, True, False)
 client.start_handle_loop()
 client.start_send_loop()
@@ -33,6 +33,7 @@ chatbox=ui.TextBox()
 
 while True:
 	screen.blit(client.map_surf, (0,0))
+	client.particle_manager.update()
 	clock.tick(40)
 	for event in pygame.event.get():
 		chatbox.update(event)
@@ -51,7 +52,7 @@ while True:
 				del client.entities[entity.eid]
 
 
-	client.particle_manager.update()
+	
 
 	chatbox.render(screen, (3, 579))
 	client.chatwin.render((0, 525))

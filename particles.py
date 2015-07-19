@@ -30,3 +30,8 @@ class ParticleManager(object):
 		for _ in xrange(count):
 			w=random.randint(0,255)
 			self.particles.append([(w, w, random.randint(200,255)),int(x+random.uniform(-10,10)),int(y+random.uniform(-10,10)),random.randint(3,6), random.randint(3,6), random.uniform(-5,5), random.uniform(-5,5), random.uniform(0.25,0.5)])
+
+	def make_jet_trail(self, count, x, y):
+		for _ in xrange(count):
+			w=random.randint(0,255)
+			self.particles.append([(random.randint(200,255), w, w),int(x+random.uniform(-10,10)),int(y+random.uniform(-10,10)),random.randint(3,6), random.randint(3,6), random.uniform(-5,5), random.uniform(-5,5), random.uniform(0.25,0.5)])

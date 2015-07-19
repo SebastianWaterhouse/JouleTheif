@@ -105,7 +105,7 @@ class Client(Game):
 		self.send_message_idx+=1
 		msg=self.chat_buffer.pop() if self.chat_buffer else ""
 		return control.controls_struct.pack(self.uid, self.send_message_idx, time.time(),
-			pygame.key.get_pressed()[pygame.K_a], pygame.key.get_pressed()[pygame.K_d],
+			pygame.key.get_pressed()[pygame.K_a], pygame.key.get_pressed()[pygame.K_d], pygame.key.get_pressed()[pygame.K_w],
 			pygame.key.get_pressed()[pygame.K_SPACE], pygame.mouse.get_pressed()[0], pygame.mouse.get_pressed()[1],
 			pygame.mouse.get_pressed()[2],
 			pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], self.username, str(msg))
@@ -136,18 +136,22 @@ class Client(Game):
 						with self.entity_lock:
 							for e in self.entities.values():
 								if not e.static:
-									e.kill=1
+									e.missedframe+=1
 							while i!=count:
 								chunk=self.sock.recvfrom(model.entity_struct_maxsize)[0]
 								entitydata=model.entity_struct.unpack(chunk[:model.entity_struct.size])
 								if entitydata[0] in self.entities:
-									self.entities[entitydata[0]].kill=0
+									self.entities[entitydata[0]].missedframe=0
 									self.entities[entitydata[0]].recv_data(chunk)
 								else:
 									try:
 										self.entities[entitydata[0]]=model.construct_entity(self, entitydata[1], chunk)
 									except: pass
 								i+=1
+							for e in self.entities.values():
+								if not e.static:
+									if e.missedframe>2:
+										e.kill=True
 					else:
 						self.sock.recvfrom(model.entity_struct.size*count) #Invalid order, throw away
 			except socket.error as e:
