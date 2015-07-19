@@ -62,7 +62,7 @@ class ClientData(object):
 		self.last_bullet_fired+=dt
 
 		if frame.jump and self.player_entity.on_ground:
-			self.player_entity.vel_y=-80
+			self.player_entity.vel_y=-118
 
 		if frame.left:
 			self.player_entity.vel_x=-65

@@ -118,6 +118,8 @@ class Entity(object):
 			if self.art!="NONE":self.game.graphics.blit(loader.assets(self.art), (self.x, self.y))
 			if self.label: self.game.graphics.blit(pygame.font.SysFont('monospace', 13, bold=True).render(self.label, 1, (255,255,255) if self.eid !=self.game.player else (0,255,0)), (self.x, self.y-28))
 			self._render()
+			if self.game.show_boxes:
+				self.game.graphics.draw_rect((255,0,0) if self.collide else (0,255,0), self.rect, 1)
 
 class JouledEntity(Entity):
 	je_struct=struct.Struct("I I I I I I ? ?")
@@ -135,7 +137,7 @@ class JouledEntity(Entity):
 		self.energy, self.energy_max, self.energy_regen, self.joulegun_target, self.hp, self.hp_max, self.sucking, self.jetpacking = self.je_struct.unpack(dg)
 
 	def _update(self, dt):
-		self.vel_y+=52*dt
+		self.vel_y+=100*dt
 		self.vel_x+=-5 if self.vel_x>1 else 5
 		if abs(self.vel_x)<20:
 			self.vel_x=0
@@ -154,17 +156,17 @@ class JouledEntity(Entity):
 
 	def _render(self):
 		if self.energy_max != 0:
-			pygame.draw.rect(self.game.graphics, (0,0,255), pygame.Rect(self.x, self.y-16, (self.width/self.energy_max)*self.energy, 8))
+			self.game.graphics.draw_rect((0,0,255), pygame.Rect(self.x, self.y-16, (self.width/self.energy_max)*self.energy, 8))
 			self.game.graphics.blit(pygame.font.SysFont('',12).render(str(int(self.energy))+'/'+str(self.energy_max), True, (255,0,255)), (self.x, self.y-16))
 		if self.hp_max != 0:
-			pygame.draw.rect(self.game.graphics, (100,0,0), pygame.Rect(self.x, self.y-8, (self.width/self.hp_max)*self.hp, 8))
+			self.game.graphics.draw_rect((100,0,0), pygame.Rect(self.x, self.y-8, (self.width/self.hp_max)*self.hp, 8))
 			self.game.graphics.blit(pygame.font.SysFont('',12).render(str(int(self.hp))+'/'+str(self.hp_max), True, (255,255,0)), (self.x, self.y-8))
 
 		if self.jetpacking:
 			self.game.particle_manager.make_jet_trail(1, self.rect.centerx, self.rect.bottom-self.height/4)
 
 		if self.joulegun_target:
-			pygame.draw.line(self.game.graphics, (255,0,0) if self.sucking else (0,255,0), self.rect.topleft, self.game.entities[self.joulegun_target].rect.topleft, 3)
+			self.game.graphics.draw_line((255,0,0) if self.sucking else (0,255,0), self.rect.center, self.game.entities[self.joulegun_target].rect.center, 3)
 
 class Projectile(Entity):
 	p_struct=struct.Struct("I")
@@ -211,10 +213,10 @@ class CollidesWhenFull(JouledEntity):
 
 	def _render(self):
 		if self.energy_max != 0:
-			pygame.draw.rect(self.game.graphics, (0,0,255), pygame.Rect(self.x, self.y-16, (self.width/self.energy_max)*self.energy, 8))
+			self.game.graphics.draw_rect((0,0,255), pygame.Rect(self.x, self.y-16, (self.width/self.energy_max)*self.energy, 8))
 			self.game.graphics.blit(pygame.font.SysFont('',12).render(str(int(self.energy))+'/'+str(self.energy_max), True, (255,0,255)), (self.x, self.y-16))
 		if self.collide:
-			pygame.draw.rect(self.game.graphics, (255,0,0), self.rect)
+			self.game.graphics.draw_rect((255,0,0), self.rect)
 
 class Spikes(Entity):
 

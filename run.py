@@ -1,4 +1,4 @@
-import game, pygame, time, loader, sys, ui, random, maploader
+import game, pygame, time, loader, sys, ui, random, maploader, util
 
 loader.assets.load_dir("assets_shared")
 
@@ -7,7 +7,7 @@ if "server" in sys.argv or "saserver" in sys.argv:
 	print "Starting Server..."
 	server = game.Server(('', 1228))
 	time.sleep(0.1)
-	maploader.load_map_fn('maps/test3.tmx', server, False, True)
+	maploader.load_map_fn('maps/test4.tmx', server, False, True)
 	server.start_handle_loop()
 	server.start_update_loop()
 	if len(sys.argv)>2:
@@ -17,15 +17,17 @@ if "saserver" in sys.argv:
 time.sleep(0.1)
 pygame.init()
 
-screen = pygame.display.set_mode((832,600))#((650,500))
+screen_size=(832,600)
+screen = pygame.display.set_mode(screen_size)#((650,500))
+sscreen = util.ScrollingWorldManager(screen)
 
 loader.assets.load_dir("assets_client")
 
 if len(sys.argv)>1 and "server" not in sys.argv:
 	username=sys.argv[1]
 print "Connecting Client..."
-client = game.Client(('localhost' if 'server' in sys.argv else 'a.zapflame.com', 1228), username, screen)
-maploader.load_map_fn('maps/test3.tmx', client, True, False)
+client = game.Client(('localhost' if 'server' in sys.argv else 'a.zapflame.com', 1228), username, sscreen)
+maploader.load_map_fn('maps/test4.tmx', client, True, False)
 client.start_handle_loop()
 client.start_send_loop()
 print "Starting Loop..."
@@ -34,7 +36,8 @@ clock=pygame.time.Clock()
 chatbox=ui.TextBox()
 
 while True:
-	screen.blit(client.map_surf, (0,0))
+	screen.fill((0,0,0))
+	sscreen.blit(client.map_surf, (0,0))
 	client.particle_manager.update()
 	clock.tick(40)
 	for event in pygame.event.get():
@@ -43,7 +46,13 @@ while True:
 			pygame.quit()
 
 	if chatbox.buf:
-		client.post_chat_message('', chatbox.buf.pop())
+		msg=chatbox.buf.pop()
+		if msg.startswith("\\"):
+			msg=msg.replace("\\","")
+			if msg=="toggleboxes":
+				client.show_boxes=not client.show_boxes
+		else:
+			client.post_chat_message('', msg)
 	client.input_frozen = chatbox.enabled
 	
 	with client.entity_lock:
@@ -53,8 +62,8 @@ while True:
 			if entity.kill:
 				del client.entities[entity.eid]
 
-
-	
+	if client.player in client.entities:
+		sscreen.set_offset((client.entities[client.player].x-screen_size[0]/2-client.entities[client.player].width/2, client.entities[client.player].y-screen_size[1]/2-client.entities[client.player].height/2))
 
 	chatbox.render(screen, (3, 579))
 	client.chatwin.render((0, 525))

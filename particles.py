@@ -15,7 +15,7 @@ class ParticleManager(object):
 		self.clock.tick()
 		dt=1/self.clock.get_fps() if self.clock.get_fps()>10 else 0
 		for particle in self.particles:
-			pygame.draw.rect(self.screen, particle[0], pygame.Rect(*particle[1:5]))
+			self.screen.draw_rect(particle[0], pygame.Rect(*particle[1:5]))
 			particle[7]-=dt
 			particle[1]+=dt*particle[5]
 			particle[2]+=dt*particle[6]

@@ -90,11 +90,13 @@ class Client(Game):
 		self.username=username
 		self.chat_buffer=[]
 		self.input_frozen=False
-		self.chatwin = ui.IngameRenderedConsole(self.graphics)
+		self.chatwin = ui.IngameRenderedConsole(self.graphics.screen)
 		self.ping = -1
 		self.recv_rate=-1
 		self.player=-1
 		self.entity_lock=util.ContextManagerLock()
+
+		self.show_boxes=False
 
 		self.particle_manager=particles.ParticleManager(self.graphics)
 
@@ -108,7 +110,7 @@ class Client(Game):
 			pygame.key.get_pressed()[pygame.K_a], pygame.key.get_pressed()[pygame.K_d], pygame.key.get_pressed()[pygame.K_w],
 			pygame.key.get_pressed()[pygame.K_SPACE], pygame.mouse.get_pressed()[0], pygame.mouse.get_pressed()[1],
 			pygame.mouse.get_pressed()[2],
-			pygame.mouse.get_pos()[0], pygame.mouse.get_pos()[1], self.username, str(msg))
+			pygame.mouse.get_pos()[0]+self.graphics.offset_x, pygame.mouse.get_pos()[1]+self.graphics.offset_y, self.username, str(msg))
 
 	def handle_loop(self):
 		clock=pygame.time.Clock()
