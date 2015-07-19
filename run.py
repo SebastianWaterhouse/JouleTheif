@@ -24,7 +24,7 @@ loader.assets.load_dir("assets_client")
 if len(sys.argv)>1 and "server" not in sys.argv:
 	username=sys.argv[1]
 print "Connecting Client..."
-client = game.Client(('localhost', 1228), username, screen)
+client = game.Client(('localhost' if 'server' in sys.argv else 'a.zapflame.com', 1228), username, screen)
 maploader.load_map_fn('maps/test3.tmx', client, True, False)
 client.start_handle_loop()
 client.start_send_loop()
