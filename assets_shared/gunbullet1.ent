@@ -1,0 +1,9 @@
+{
+	"art":"NONE",
+	"width":10,
+	"height":10,
+	"collide":false,
+	"damage":5,
+
+	"typeid":2
+}

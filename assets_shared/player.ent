@@ -1,0 +1,13 @@
+{
+	"art":"player_art01",
+	"x":128,
+	"y":64,
+	"width":32,
+	"height":64,
+	"energy":10,
+	"energy_max":100,
+	"hp":100,
+	"hp_max":100,
+
+	"typeid":1
+}
