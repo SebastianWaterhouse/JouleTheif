@@ -2416,7 +2416,7 @@
   <object id="2" x="0" y="0" width="32" height="1148"/>
   <object id="3" x="3" y="928" width="1278" height="32"/>
   <object id="4" x="1247.5" y="0" width="32" height="1148"/>
-  <object id="5" x="24" y="256" width="200" height="30"/>
+  <object id="5" x="24" y="256" width="199" height="30"/>
   <object id="6" x="192" y="256" width="31" height="159"/>
   <object id="7" x="192" y="384" width="447" height="30"/>
   <object id="8" x="608" y="0" width="32" height="255.333"/>
